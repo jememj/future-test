@@ -3,27 +3,49 @@ import axios from 'axios';
 
 export const fetchAsyncBooks = createAsyncThunk(
     'books/fetchAsyncBooks',
-    async (query) => {
-        const response = await 
-            axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}$maxResults=30`)
-        return response.data
+    async (_,{getState}) => {
+        const {bookSlice} = getState();
+        console.log(bookSlice);
+        return await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=${bookSlice.searchValue}
+            +subject:${bookSlice.categorySelected}
+            &orderBy=${bookSlice.sortByValueSelected}`
+            ).then(res => res.data)
     }
 )
 
 const bookSlice = createSlice({
-    name: 'bookSlice',
+    name: 'books',
     initialState: {
         books: [],
-        status: 'loading',
+        status: true,
         searchValue: '',
+        categorySelected: '',
+        sortByValueSelected: 'relevance',
+
     },
     reducers: {
-        saveEditSearchValue(state, action) {
+        editSearchValue(state, action) {
             state.searchValue = action.payload;
         },
+        editStatus(state, action){
+            state.status = action.payload;
+        },
+        editCategorySelected(state, action) {
+            state.categorySelected = action.payload;
+        },
+        editSortByValueSelected(state, action) {
+            state.sortByValueSelected = action.payload;
+        },
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchAsyncBooks.fulfilled, (state, action) => {
+            state.books = [...action.payload.items];
+            state.status = true;
+        })
+    }, 
 });
 
-export const { saveEditSearchValue} = bookSlice.actions;
+export const { editSearchValue, editStatus, editCategorySelected, editSortByValueSelected } = bookSlice.actions;
 
 export default bookSlice.reducer;

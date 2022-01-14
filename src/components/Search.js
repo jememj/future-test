@@ -1,29 +1,27 @@
-import styled from 'styled-components'
-import { useState } from "react";
-import axios from 'axios';
-import { useDispatch  } from 'react-redux';
-import { fetchAsyncBooks, saveEditSearchValue } from '../redux/bookSlice';
+import styled from 'styled-components';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchAsyncBooks, editSearchValue, editStatus, editCategorySelected, editSortByValueSelected } from '../redux/bookSlice';
 
 export default function Search() {
-    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
-
     const handleChange = (e) => {
-        dispatch(saveEditSearchValue(e.target.value));
+        dispatch(editSearchValue(e.target.value));
     }
     const handleSubmit = (e) => {
-        dispatch(fetchAsyncBooks());
         e.preventDefault();
-        // setLoading(true);
-        // axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}$maxResults=30`)
-        // .then(data => {
-        //     setData(data.data.items);
-        //     setLoading(false);
-        // }).catch(err => {
-        //     console.log(err.response);
-        //     setLoading(true);
-        // })
+        dispatch(fetchAsyncBooks());
+        dispatch(editStatus(false));
     }
+    const handleChangeSortingBySelected = (e) => {
+        dispatch(editSortByValueSelected(e.target.value));
+        handleSubmit(e);
+    }
+    const handleChangeCategorySelected = (e) => {
+        dispatch(editCategorySelected(e.target.value));
+        handleSubmit(e);
+    }
+    
     return (
         <>
         <form onSubmit={handleSubmit}>
@@ -33,15 +31,15 @@ export default function Search() {
         <Wrapper>
             <Form>
                 <p>sorting by</p>
-                <select>
+                <select onChange={handleChangeSortingBySelected}>
                     <option>relevance</option>
                     <option>newest</option>
                 </select>
             </Form>
             <Form>
                 <p>categories</p>
-                <select>
-                    <option>all</option>
+                <select onChange={handleChangeCategorySelected}>
+                    <option value="">all</option>
                     <option>art</option>
                     <option>biography</option>
                     <option>computers</option>

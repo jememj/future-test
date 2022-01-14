@@ -1,19 +1,20 @@
 import styled from 'styled-components'
 import { Link, Switch, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import CurrentBook from './CurrentBook';
 
-export default function ResultList({data, loading}) {
-    console.log(data);
-    if(loading){
-        return <p>wait</p>
-    } 
-    if(!data?.length) {
+export default function ResultList() {
+    const books = useSelector((state) => state.bookSlice.books);
+
+    console.log(books);
+    if(!books?.length) {
         return <p>нет книжек</p>
     }
     return (
         <>
+        <p>found {books.length} items</p>
         <List>
-        {data.map(book=>(
+        {books.map(book=>(
             <Item key={book.id}>
                 <Link to={`/books/${book.id}`}>
                 <Img src={book.volumeInfo.imageLinks.thumbnail}/>
@@ -26,10 +27,10 @@ export default function ResultList({data, loading}) {
             </Item>
         ))}
         </List>
-        <Route 
+        {/* <Route 
             path="/books/:id"
             component={CurrentBook}
-        />
+        /> */}
         </>
     );
 }

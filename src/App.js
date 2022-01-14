@@ -1,14 +1,18 @@
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+
 import ResultList from './components/ResultList';
 import Search from "./components/Search";
 
 export default function App() {
+  const status = useSelector((state) => state.bookSlice.status);
+  
   return (
     <>
     <Container>
       <Title>search for books</Title>
       <Search/>
-      <ResultList />
+      {status === false ? <b>wait</b> : <ResultList />}
     </Container>
     </>
   );
