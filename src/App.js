@@ -1,20 +1,23 @@
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-
+import { Switch, Route } from 'react-router-dom';
+import CurrentBook from './components/CurrentBook';
 import ResultList from './components/ResultList';
 import Search from "./components/Search";
 
 export default function App() {
-  const status = useSelector((state) => state.bookSlice.status);
-  
-  return (
-    <>
+    return (
     <Container>
-      <Title>search for books</Title>
-      <Search/>
-      {status === false ? <b>wait</b> : <ResultList />}
+      <Switch>
+        <Route path="/" exact>
+          <Title>search for books</Title>
+          <Search/>
+          <ResultList/>
+        </Route>
+        <Route path="/:id">
+          <CurrentBook/>
+        </Route>
+      </Switch>
     </Container>
-    </>
   );
 }
 

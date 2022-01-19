@@ -1,38 +1,48 @@
 import styled from 'styled-components'
-import { Link, Switch, Route } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import CurrentBook from './CurrentBook';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchBooks, setStartIndex, setCurrentBook } from '../redux/bookSlice';
 
 export default function ResultList() {
+    const dispatch = useDispatch();
     const books = useSelector((state) => state.bookSlice.books);
+    const startIndex = useSelector((state) => state.bookSlice.startIndex);
+    const totalItems = useSelector((state) => state.bookSlice.totalItems);
+    const status = useSelector((state) => state.bookSlice.status);
 
-    console.log(books);
-    if(!books?.length) {
-        return <p>нет книжек</p>
+    const loadMore = (e) => {
+        e.preventDefault();
+        dispatch(setStartIndex(startIndex + 30));
+        dispatch(fetchBooks());
     }
+
+    if (!status) {
+        return <Preloader>wait</Preloader>;
+    }
+    if(!books?.length) {
+        return <p>нет книжек</p>;
+    }
+    
     return (
         <>
-        <p>found {books.length} items</p>
+        <p>found {totalItems} items</p>
         <List>
-        {books.map(book=>(
-            <Item key={book.id}>
-                <Link to={`/books/${book.id}`}>
-                <Img src={book.volumeInfo.imageLinks.thumbnail}/>
-                <Info>
-                    <Categories>{book.volumeInfo.categories}</Categories>
-                    <Title>{book.volumeInfo.title}</Title>
-                    <Authors>{book.volumeInfo.authors}</Authors>
-                </Info>
+            {books.map(book=>(
+                <Link to={`/${book.id}`} key={book.id} onClick={()=>{dispatch(setCurrentBook(book))}}>
+                    <Item>
+                    {book.volumeInfo?.imageLinks?.thumbnail ? <Img src={book.volumeInfo.imageLinks.thumbnail}/> : 'нет картинки'}
+                    <Info>
+                        <Categories>{book.volumeInfo.categories}</Categories>
+                        <Title>{book.volumeInfo.title}</Title>
+                        <Authors>{book.volumeInfo.authors}</Authors>
+                    </Info>
+                    </Item>
                 </Link>
-            </Item>
-        ))}
+            ))}
         </List>
-        {/* <Route 
-            path="/books/:id"
-            component={CurrentBook}
-        /> */}
+        <button onClick={loadMore}>еще</button>
         </>
-    );
+    )
 }
 
 const List = styled.div`
@@ -40,7 +50,6 @@ const List = styled.div`
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
     align-content: center;
-    text-decoration: none;
 `
 const Item = styled.div`
     margin: 20px;
@@ -52,7 +61,6 @@ const Item = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
 `
 const Img = styled.img`
     margin-bottom: 5px;
@@ -69,5 +77,9 @@ const Authors = styled.div`
     color: grey;
 `
 const Categories = styled.div`
-    text-decoration: underline
+    text-decoration: underline;
+`
+const Preloader = styled.div`
+    font-size: 25px;
+    margin-top: 250px;
 `

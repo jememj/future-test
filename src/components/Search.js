@@ -1,24 +1,23 @@
 import styled from 'styled-components';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchAsyncBooks, editSearchValue, editStatus, editCategorySelected, editSortByValueSelected } from '../redux/bookSlice';
+import { fetchBooks, setSearchValue, setStatus, setCategorySelected, setSortByValueSelected } from '../redux/bookSlice';
 
 export default function Search() {
     const dispatch = useDispatch();
     const handleChange = (e) => {
-        dispatch(editSearchValue(e.target.value));
+        dispatch(setSearchValue(e.target.value));
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(fetchAsyncBooks());
-        dispatch(editStatus(false));
+        dispatch(fetchBooks());
+        dispatch(setStatus(false));
     }
     const handleChangeSortingBySelected = (e) => {
-        dispatch(editSortByValueSelected(e.target.value));
+        dispatch(setSortByValueSelected(e.target.value));
         handleSubmit(e);
     }
     const handleChangeCategorySelected = (e) => {
-        dispatch(editCategorySelected(e.target.value));
+        dispatch(setCategorySelected(e.target.value));
         handleSubmit(e);
     }
     
