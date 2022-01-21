@@ -1,21 +1,37 @@
-import { createAsyncThunk, createSlice, createSelector } from '@reduxjs/toolkit';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+
+const notifyError = (err) => toast.error(`Ошибка ${err}`, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: true,
+    closeOnClick: false,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+});
 
 export const fetchBooks = createAsyncThunk(
     'books/fetchBooks',
     async (_,{getState}) => {
         const {bookSlice} = getState();
         const res = await axios.get(
-            `https://www.googleapis.com/books/v1/volumes?q=${bookSlice.searchValue}+subject:${bookSlice.categorySelected}&orderBy=${bookSlice.sortByValueSelected}&maxResults=30&&startIndex=${bookSlice.startIndex}`);
-        return res.data;
+            `https://www.googleapis.com/books/v1/volumes?q=${bookSlice.searchValue}+subject:${bookSlice.categorySelected}&orderBy=${bookSlice.sortByValueSelected}&maxResults=30&&startIndex=${bookSlice.startIndex}`)
+            .then(res => res.data)
+            .catch(err => notifyError(err));
+        return res;
     }
 )
 
 export const fetchBookById = createAsyncThunk(
     'books/fetchBookById',
     async (bookId) => {
-        const res = await axios.get(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
-        return res.data;
+        const res = await axios.get(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+        .then(res => res.data)
+        .catch(err => notifyError(err));
+        return res;
     }
 )
 
@@ -28,7 +44,7 @@ const bookSlice = createSlice({
         categorySelected: '',
         sortByValueSelected: 'relevance',
         startIndex: 0,
-        totalItems: 0,
+        totalBooks: 0,
         currentBook: null,
     },
     reducers: {
@@ -55,7 +71,7 @@ const bookSlice = createSlice({
         builder.addCase(fetchBooks.fulfilled, (state, action) => {
             state.books = [...state.books, ...action.payload.items];
             state.status = true;
-            state.totalItems = action.payload.totalItems;
+            state.totalBooks = action.payload.totalBooks;
         })
         builder.addCase(fetchBookById.fulfilled, (state, action)=>{
             state.currentBook = action.payload;

@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchBooks, setStartIndex, setCurrentBook } from '../redux/bookSlice';
 
+const selectBooks = state => state.bookSlice.books;
+const selectStartIndex = state => state.bookSlice.startIndex;
+const selectTotalBooks = state => state.bookSlice.totalBooks;
+const selectStatus = state => state.bookSlice.status;
+
 export default function ResultList() {
     const dispatch = useDispatch();
-    const books = useSelector((state) => state.bookSlice.books);
-    const startIndex = useSelector((state) => state.bookSlice.startIndex);
-    const totalItems = useSelector((state) => state.bookSlice.totalItems);
-    const status = useSelector((state) => state.bookSlice.status);
+    const books = useSelector(selectBooks);
+    const startIndex = useSelector(selectStartIndex);
+    const totalBooks = useSelector(selectTotalBooks);
+    const status = useSelector(selectStatus);
 
     const loadMore = (e) => {
         e.preventDefault();
@@ -25,19 +30,19 @@ export default function ResultList() {
     
     return (
         <>
-        <p>found {totalItems} items</p>
+        <p>found {totalBooks} items</p>
         <List>
             {books.map(book=>(
-                <Link to={`/${book.id}`} key={book.id} onClick={()=>{dispatch(setCurrentBook(book))}}>
-                    <Item>
+            <Item key={book.id}>
+                <Link to={`/${book.id}`} onClick={()=>{dispatch(setCurrentBook(book))}}>
                     {book.volumeInfo?.imageLinks?.thumbnail ? <Img src={book.volumeInfo.imageLinks.thumbnail}/> : 'нет картинки'}
                     <Info>
                         <Categories>{book.volumeInfo.categories}</Categories>
                         <Title>{book.volumeInfo.title}</Title>
                         <Authors>{book.volumeInfo.authors}</Authors>
                     </Info>
-                    </Item>
                 </Link>
+            </Item>
             ))}
         </List>
         <button onClick={loadMore}>еще</button>

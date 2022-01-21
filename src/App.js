@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Switch, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import CurrentBook from './components/CurrentBook';
 import ResultList from './components/ResultList';
 import Search from "./components/Search";
@@ -17,6 +18,7 @@ export default function App() {
           <CurrentBook/>
         </Route>
       </Switch>
+      <ToastContainer/>
     </Container>
   );
 }

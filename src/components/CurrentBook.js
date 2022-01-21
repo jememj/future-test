@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -14,10 +13,10 @@ export default function CurrentBook() {
     const book = useSelector(selectCurrentBook);
 
     useEffect(() => {
-            if(!book){
-                dispatch(fetchBookById(id));
-            }
-        },[book, id]);
+        if(!book){
+            dispatch(fetchBookById(id));
+        }
+    },[book, id]);
 
     if (!book) {
         return <Preloader>wait</Preloader>;
